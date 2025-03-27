@@ -1,0 +1,6 @@
+@Mission11_Herrera.API_HostAddress = http://localhost:5194
+
+GET {{Mission11_Herrera.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
