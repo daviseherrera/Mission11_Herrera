@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Book } from './types/Books';
 
 function BookList() {
@@ -10,6 +10,12 @@ function BookList() {
     const [totalPages, setTotalPages] = useState<number>(0);
     const [sortAscending, setSortAscending] = useState<boolean>(true);
     const [category, setCategory] = useState<string>("");
+    const [cart, setCart] = useState<{ [bookId: number]: { book: Book; quantity: number } }>({});
+    const [total, setTotal] = useState<number>(0);
+    const [showToast, setShowToast] = useState<boolean>(false);
+    const [toastMessage, setToastMessage] = useState<string>("");
+    const [showCart, setShowCart] = useState<boolean>(false);
+    const lastVisitedPage = useRef<number>(pageNum);
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -24,31 +30,111 @@ function BookList() {
 
     }, [pageSize, pageNum, category]);
 
+    useEffect(() => {
+        const newTotal = Object.values(cart).reduce((sum, item) => sum + item.book.price * item.quantity, 0);
+        setTotal(newTotal);
+    }, [cart]);
+
     return (
         <>
-            <h1>Books</h1>
-            <br />
-            <button className="btn btn-primary mb-3" onClick={() => setSortAscending(!sortAscending)}>
-                Sort by Title {sortAscending ? "▲" : "▼"}
-            </button>
-            {[...books].sort((a, b) => {
-                if (a.title < b.title) return sortAscending ? -1 : 1;
-                if (a.title > b.title) return sortAscending ? 1 : -1;
-                return 0;
-            }).map((b) =>
-                <div key={b.bookID} className="card mb-3">
-                    <div className="card-body">
-                        <h3>{b.title}</h3>
-                        <p><strong>Author:</strong> {b.author}</p>
-                        <p><strong>Publisher:</strong> {b.publisher}</p>
-                        <p><strong>ISBN:</strong> {b.isbn}</p>
-                        <p><strong>Classification:</strong> {b.classification}</p>
-                        <p><strong>Category:</strong> {b.category}</p>
-                        <p><strong>Pages:</strong> {b.pageCount}</p>
-                        <p><strong>Price:</strong> ${b.price.toFixed(2)}</p>
+            {showToast && (
+                <div className="toast show position-fixed top-0 end-0 m-3 bg-success text-white" role="alert">
+                    <div className="toast-body">
+                        {toastMessage}
                     </div>
                 </div>
             )}
+            <h1>Books</h1>
+            <div className="mb-3">
+                <button
+                    className="btn btn-info mb-2"
+                    type="button"
+                    onClick={() => setShowCart(!showCart)}
+                    aria-expanded={showCart}
+                >
+                    Toggle Cart Summary
+                </button>
+
+                <div className={`collapse ${showCart ? 'show' : ''}`}>
+                    <div className="alert alert-info">
+                        <h5>Cart Summary</h5>
+                        {Object.keys(cart).length > 0 && (
+                            <button className="btn btn-warning mb-3" onClick={() => setPageNum(lastVisitedPage.current)}>
+                                Continue Shopping
+                            </button>
+                        )}
+                        <ul className="list-unstyled mb-1">
+                            {Object.values(cart).map(item => (
+                                <li key={item.book.bookID}>
+                                    {item.book.title} x {item.quantity} = ${ (item.book.price * item.quantity).toFixed(2) }
+                                </li>
+                            ))}
+                        </ul>
+                        <strong>Total: ${total.toFixed(2)}</strong>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div className="mb-3">
+                <label className="form-label me-2">Filter by Category:</label>
+                <select className="form-select w-auto d-inline" value={category} onChange={(e) => {
+                    setCategory(e.target.value);
+                    setPageNum(1); // reset to first page on category change
+                }}>
+                    <option value="">All</option>
+                    <option value="Biography">Biography</option>
+                    <option value="Self-Help">Self-Help</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Science">Science</option>
+                    <option value="Technology">Technology</option>
+                    {/* Add more options as needed */}
+                </select>
+            </div>
+            <button className="btn btn-primary mb-3" onClick={() => setSortAscending(!sortAscending)}>
+                Sort by Title {sortAscending ? "▲" : "▼"}
+            </button>
+            <div className="row">
+                {[...books].sort((a, b) => {
+                    if (a.title < b.title) return sortAscending ? -1 : 1;
+                    if (a.title > b.title) return sortAscending ? 1 : -1;
+                    return 0;
+                }).map((b) =>
+                    <div key={b.bookID} className="col-md-6 col-lg-4 mb-4">
+                        <div className="card h-100">
+                            <div className="card-body">
+                                <h3>{b.title}</h3>
+                                <p><strong>Author:</strong> {b.author}</p>
+                                <p><strong>Publisher:</strong> {b.publisher}</p>
+                                <p><strong>ISBN:</strong> {b.isbn}</p>
+                                <p><strong>Classification:</strong> {b.classification}</p>
+                                <p><strong>Category:</strong> {b.category}</p>
+                                <p><strong>Pages:</strong> {b.pageCount}</p>
+                                <p><strong>Price:</strong> ${b.price.toFixed(2)}</p>
+                                <button className="btn btn-success" onClick={() => {
+                                    lastVisitedPage.current = pageNum;
+                                    setCart(prev => {
+                                        const existing = prev[b.bookID];
+                                        const updated = {
+                                            ...prev,
+                                            [b.bookID]: {
+                                                book: b,
+                                                quantity: existing ? existing.quantity + 1 : 1
+                                            }
+                                        };
+                                        return updated;
+                                    });
+                                    setToastMessage(`Added "${b.title}" to cart`);
+                                    setShowToast(true);
+                                    setTimeout(() => setShowToast(false), 3000);
+                                }}>
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <button className="btn btn-secondary me-2" disabled={pageNum === 1} onClick={() => setPageNum(pageNum - 1)}>Previous</button>
             {
