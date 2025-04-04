@@ -35,39 +35,34 @@ function BookList() {
                 if (a.title > b.title) return sortAscending ? 1 : -1;
                 return 0;
             }).map((b) =>
-                <div key={b.bookID} id="bookCard" style={{ 
-                    border: '1px solid #ccc', 
-                    borderRadius: '8px', 
-                    padding: '1rem', 
-                    marginBottom: '1rem',
-                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)' 
-                }}>
-                    <h3>{b.title}</h3>
-                    <p><strong>Author:</strong> {b.author}</p>
-                    <p><strong>Publisher:</strong> {b.publisher}</p>
-                    <p><strong>ISBN:</strong> {b.isbn}</p>
-                    <p><strong>Classification:</strong> {b.classification}</p>
-                    <p><strong>Category:</strong> {b.category}</p>
-                    <p><strong>Pages:</strong> {b.pageCount}</p>
-                    <p><strong>Price:</strong> ${b.price.toFixed(2)}</p>
+                <div key={b.bookID} className="card mb-3">
+                    <div className="card-body">
+                        <h3>{b.title}</h3>
+                        <p><strong>Author:</strong> {b.author}</p>
+                        <p><strong>Publisher:</strong> {b.publisher}</p>
+                        <p><strong>ISBN:</strong> {b.isbn}</p>
+                        <p><strong>Classification:</strong> {b.classification}</p>
+                        <p><strong>Category:</strong> {b.category}</p>
+                        <p><strong>Pages:</strong> {b.pageCount}</p>
+                        <p><strong>Price:</strong> ${b.price.toFixed(2)}</p>
+                    </div>
                 </div>
-        )}
+            )}
 
-            <button disabled={pageNum === 1} onClick={() => setPageNum(pageNum - 1)}>Previous</button>
-
+            <button className="btn btn-secondary me-2" disabled={pageNum === 1} onClick={() => setPageNum(pageNum - 1)}>Previous</button>
             {
                 [...Array(totalPages)].map((_, i) => (
-                    <button key={i + 1} onClick={() => setPageNum(i + 1)}>
+                    <button className="btn btn-outline-primary me-1" key={i + 1} onClick={() => setPageNum(i + 1)}>
                         {i + 1}
                     </button>
-            ))}
-
-            <button disabled={pageNum === totalPages} onClick={() => setPageNum(pageNum + 1)}>Next</button>
+                ))
+            }
+            <button className="btn btn-secondary ms-2" disabled={pageNum === totalPages} onClick={() => setPageNum(pageNum + 1)}>Next</button>
 
             <br />
-            <label>
+            <label className="form-label mt-3">
                 Results per page:
-                <select value={pageSize} onChange={(b) => setPageSize(Number(b.target.value))}>
+                <select className="form-select w-auto d-inline ms-2" value={pageSize} onChange={(b) => setPageSize(Number(b.target.value))}>
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
