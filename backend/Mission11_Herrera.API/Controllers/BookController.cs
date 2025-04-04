@@ -17,11 +17,18 @@ public class BookController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get(int pageSize = 10, int pageNum = 1)
+    public IActionResult Get(int pageSize = 10, int pageNum = 1, string? category = null)
     {
-        var totalBooks = _context.Books.Count();
+        var query = _context.Books.AsQueryable();
 
-        var books = _context.Books
+        if (!string.IsNullOrEmpty(category))
+        {
+            query = query.Where(b => b.Category == category);
+        }
+
+        var totalBooks = query.Count();
+
+        var books = query
             .Skip((pageNum - 1) * pageSize)
             .Take(pageSize)
             .ToList();

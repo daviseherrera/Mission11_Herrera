@@ -83,58 +83,108 @@ function BookList() {
                 }}>
                     <option value="">All</option>
                     <option value="Biography">Biography</option>
+                    <option value="Classic">Classic</option>
+                    <option value="Historical">Historical</option>
                     <option value="Self-Help">Self-Help</option>
-                    <option value="Fiction">Fiction</option>
-                    <option value="Non-Fiction">Non-Fiction</option>
-                    <option value="Science">Science</option>
-                    <option value="Technology">Technology</option>
-                    {/* Add more options as needed */}
+                    <option value="Thrillers">Thrillers</option>
+                    <option value="Business">Business</option>
+                    <option value="Health">Health</option>
+                    <option value="Christian Books">Christian Books</option>
+                    <option value="Action">Action</option>
                 </select>
             </div>
             <button className="btn btn-primary mb-3" onClick={() => setSortAscending(!sortAscending)}>
                 Sort by Title {sortAscending ? "▲" : "▼"}
             </button>
-            <div className="row">
-                {[...books].sort((a, b) => {
+            {
+                [...books].sort((a, b) => {
                     if (a.title < b.title) return sortAscending ? -1 : 1;
                     if (a.title > b.title) return sortAscending ? 1 : -1;
                     return 0;
-                }).map((b) =>
-                    <div key={b.bookID} className="col-md-6 col-lg-4 mb-4">
-                        <div className="card h-100">
-                            <div className="card-body">
-                                <h3>{b.title}</h3>
-                                <p><strong>Author:</strong> {b.author}</p>
-                                <p><strong>Publisher:</strong> {b.publisher}</p>
-                                <p><strong>ISBN:</strong> {b.isbn}</p>
-                                <p><strong>Classification:</strong> {b.classification}</p>
-                                <p><strong>Category:</strong> {b.category}</p>
-                                <p><strong>Pages:</strong> {b.pageCount}</p>
-                                <p><strong>Price:</strong> ${b.price.toFixed(2)}</p>
-                                <button className="btn btn-success" onClick={() => {
-                                    lastVisitedPage.current = pageNum;
-                                    setCart(prev => {
-                                        const existing = prev[b.bookID];
-                                        const updated = {
-                                            ...prev,
-                                            [b.bookID]: {
-                                                book: b,
-                                                quantity: existing ? existing.quantity + 1 : 1
-                                            }
-                                        };
-                                        return updated;
-                                    });
-                                    setToastMessage(`Added "${b.title}" to cart`);
-                                    setShowToast(true);
-                                    setTimeout(() => setShowToast(false), 3000);
-                                }}>
-                                    Add to Cart
-                                </button>
+                }).length > 1 ? (
+                    <div className="row align-items-stretch">
+                        {[...books].sort((a, b) => {
+                            if (a.title < b.title) return sortAscending ? -1 : 1;
+                            if (a.title > b.title) return sortAscending ? 1 : -1;
+                            return 0;
+                        }).map((b) => (
+                            <div key={b.bookID} className="col-sm-10 col-md-6 col-lg-4 mb-4">
+                                <div className="card">
+                                    <div className="card-body text-center" style={{ maxWidth: '100%' }}>
+                                        <div className="mb-3">
+                                            <h3 className="text-break">{b.title}</h3>
+                                            <p><strong>Author:</strong> {b.author}</p>
+                                            <p><strong>Publisher:</strong> {b.publisher}</p>
+                                            <p><strong>ISBN:</strong> {b.isbn}</p>
+                                            <p><strong>Classification:</strong> {b.classification}</p>
+                                            <p><strong>Category:</strong> {b.category}</p>
+                                            <p><strong>Pages:</strong> {b.pageCount}</p>
+                                            <p><strong>Price:</strong> ${b.price.toFixed(2)}</p>
+                                        </div>
+                                        <button className="btn btn-success" onClick={() => {
+                                            lastVisitedPage.current = pageNum;
+                                            setCart(prev => {
+                                                const existing = prev[b.bookID];
+                                                const updated = {
+                                                    ...prev,
+                                                    [b.bookID]: {
+                                                        book: b,
+                                                        quantity: existing ? existing.quantity + 1 : 1
+                                                    }
+                                                };
+                                                return updated;
+                                            });
+                                            setToastMessage(`Added "${b.title}" to cart`);
+                                            setShowToast(true);
+                                            setTimeout(() => setShowToast(false), 3000);
+                                        }}>
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    books.map((b) => (
+                        <div key={b.bookID} className="mb-4" style={{ maxWidth: '600px', margin: '0 auto' }}>
+                            <div className="card">
+                                <div className="card-body text-center" style={{ maxWidth: '100%' }}>
+                                    <div className="mb-3">
+                                        <h3 className="text-break">{b.title}</h3>
+                                        <p><strong>Author:</strong> {b.author}</p>
+                                        <p><strong>Publisher:</strong> {b.publisher}</p>
+                                        <p><strong>ISBN:</strong> {b.isbn}</p>
+                                        <p><strong>Classification:</strong> {b.classification}</p>
+                                        <p><strong>Category:</strong> {b.category}</p>
+                                        <p><strong>Pages:</strong> {b.pageCount}</p>
+                                        <p><strong>Price:</strong> ${b.price.toFixed(2)}</p>
+                                    </div>
+                                    <button className="btn btn-success" onClick={() => {
+                                        lastVisitedPage.current = pageNum;
+                                        setCart(prev => {
+                                            const existing = prev[b.bookID];
+                                            const updated = {
+                                                ...prev,
+                                                [b.bookID]: {
+                                                    book: b,
+                                                    quantity: existing ? existing.quantity + 1 : 1
+                                                }
+                                            };
+                                            return updated;
+                                        });
+                                        setToastMessage(`Added "${b.title}" to cart`);
+                                        setShowToast(true);
+                                        setTimeout(() => setShowToast(false), 3000);
+                                    }}>
+                                        Add to Cart
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    ))
+                )
+            }
 
             <button className="btn btn-secondary me-2" disabled={pageNum === 1} onClick={() => setPageNum(pageNum - 1)}>Previous</button>
             {

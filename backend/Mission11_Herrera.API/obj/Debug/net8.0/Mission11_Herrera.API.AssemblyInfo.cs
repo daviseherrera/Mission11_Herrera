@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Mission11_Herrera.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c04c93cbafb69b31b5b7f3362078aaa7083852d9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a212c00ff3800e88b7a41794d4a3fa536b55aabb")]
 [assembly: System.Reflection.AssemblyProductAttribute("Mission11_Herrera.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Mission11_Herrera.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
