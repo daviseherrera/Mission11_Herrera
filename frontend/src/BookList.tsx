@@ -9,10 +9,11 @@ function BookList() {
     const [totalItems, setTotalItems] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [sortAscending, setSortAscending] = useState<boolean>(true);
+    const [category, setCategory] = useState<string>("");
 
     useEffect(() => {
         const fetchBooks = async () => {
-            const response = await fetch(`http://localhost:5194/api/book?pageSize=${pageSize}&pageNum=${pageNum}`);
+            const response = await fetch(`http://localhost:5194/api/book?pageSize=${pageSize}&pageNum=${pageNum}&category=${category}`);
             const data = await response.json();
             setBooks(data.books);
             setTotalItems(data.totalNumBooks)
@@ -21,7 +22,7 @@ function BookList() {
 
         fetchBooks();
 
-    }, [pageSize, pageNum]);
+    }, [pageSize, pageNum, category]);
 
     return (
         <>
