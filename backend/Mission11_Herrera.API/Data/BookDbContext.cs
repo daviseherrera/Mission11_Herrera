@@ -1,11 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Mission11_Herrera.API.Data;
 
-namespace Mission11_Herrera.Models;
-
-public class BookDbContext : DbContext
+namespace Mission11_Herrera.Models
 {
-    public BookDbContext(DbContextOptions<BookDbContext> options) : base(options)
+    public class BookDbContext : DbContext
     {
-    }    
-    public DbSet<Book> Books { get; set; }
+        public BookDbContext(DbContextOptions<BookDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<Book> Books { get; set; }
+    }
 }

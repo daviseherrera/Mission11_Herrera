@@ -27,6 +27,9 @@ function BookList() {
         <>
             <h1>Books</h1>
             <br />
+            <button className="btn btn-primary mb-3" onClick={() => setSortAscending(!sortAscending)}>
+                Sort by Title {sortAscending ? "▲" : "▼"}
+            </button>
             {[...books].sort((a, b) => {
                 if (a.title < b.title) return sortAscending ? -1 : 1;
                 if (a.title > b.title) return sortAscending ? 1 : -1;
