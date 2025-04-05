@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-
-namespace Mission11_Herrera.API.Data
+namespace Mission11_Herrera.Models
 {
     public class Book
     {
@@ -29,6 +28,6 @@ namespace Mission11_Herrera.API.Data
         public int PageCount { get; set; }
 
         [Required]
-        public double Price { get; set; }
+        public decimal Price { get; set; }
     }
 }
