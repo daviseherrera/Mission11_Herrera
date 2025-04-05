@@ -13,7 +13,7 @@ type Book = {
 };
 
 const AdminBookList = () => {
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<Book[]>([]); // To store the fetched books
   const [newBook, setNewBook] = useState({
     title: '',
     author: '',
@@ -23,31 +23,38 @@ const AdminBookList = () => {
   const [editBook, setEditBook] = useState<Book | null>(null);
 
   useEffect(() => {
+    // Fetch all books from the API
     fetch('http://localhost:5194/api/book')
       .then(res => res.json())
       .then(data => {
-        setBooks(data.books);
-      });
-  }, []);
+        console.log('Fetched books:', data.books);  // Log the fetched books
+        setBooks(data.books);  // Set the state with all books
+      })
+      .catch(error => console.error('Error fetching books:', error));  // Error handling
+  }, []); // Runs only once when the component mounts
 
+  // Handle input changes for both adding and editing
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
     if (editBook) {
       setEditBook(prevState => ({
         ...prevState!,
-        [name]: value
+        [name]: name === 'price' ? parseFloat(value) : value // Ensure price is a number
       }));
     } else {
       setNewBook(prevState => ({
         ...prevState,
-        [name]: value
+        [name]: name === 'price' ? parseFloat(value) : value // Ensure price is a number
       }));
     }
   };
 
+  // Handle adding a new book
   const handleAddBook = (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('Adding new book:', newBook); // Log to verify data
     fetch('http://localhost:5194/api/book', {
       method: 'POST',
       headers: {
@@ -57,23 +64,28 @@ const AdminBookList = () => {
     })
     .then(res => res.json())
     .then(data => {
-      setBooks(prevBooks => [...prevBooks, data]); // Add the new book to the list
-      setNewBook({ title: '', author: '', category: '', price: 0 }); // Clear the form
-    });
+      console.log('Added book:', data); // Log the added book response
+      setBooks(prevBooks => [...prevBooks, data]);  // Add new book to the list
+      setNewBook({ title: '', author: '', category: '', price: 0 });  // Clear form
+    })
+    .catch(error => console.error('Error adding book:', error));  // Error handling
   };
 
+  // Handle editing a book
   const handleEdit = (bookID: number) => {
-  const bookToEdit = books.find(book => book.bookID === bookID);
-  if (bookToEdit) {
-    setEditBook(bookToEdit); // Only set editBook if it's not undefined
-  } else {
-    setEditBook(null); // In case no book is found, set editBook to null
-  }
+    const bookToEdit = books.find(book => book.bookID === bookID);
+    if (bookToEdit) {
+      setEditBook(bookToEdit); // Set book to edit
+    } else {
+      setEditBook(null);  // If no book found, set to null
+    }
   };
 
+  // Handle updating the book
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('Updating book:', editBook); // Log to verify data
     if (!editBook) return;
 
     fetch(`http://localhost:5194/api/book/${editBook.bookID}`, {
@@ -82,18 +94,30 @@ const AdminBookList = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(editBook),
-    }).then(res => res.json()).then(updatedBook => {
-      setBooks(prevBooks => prevBooks.map(book => book.bookID === updatedBook.bookID ? updatedBook : book));
-      setEditBook(null); // Reset editing state
-    });
+    })
+    .then(res => res.json())
+    .then(updatedBook => {
+      console.log('Updated book:', updatedBook);  // Log updated book
+      setBooks(prevBooks =>
+        prevBooks.map(book =>
+          book.bookID === updatedBook.bookID ? updatedBook : book
+        )
+      );
+      setEditBook(null);  // Reset editing state
+    })
+    .catch(error => console.error('Error updating book:', error));  // Error handling
   };
 
+  // Handle deleting a book
   const handleDelete = (bookID: number) => {
     fetch(`http://localhost:5194/api/book/${bookID}`, {
       method: 'DELETE',
-    }).then(() => {
-      setBooks(prev => prev.filter(book => book.bookID !== bookID));
-    });
+    })
+    .then(res => res.json())
+    .then(() => {
+      setBooks(prev => prev.filter(book => book.bookID !== bookID));  // Remove deleted book from the list
+    })
+    .catch(error => console.error('Error deleting book:', error));  // Error handling
   };
 
   return (
